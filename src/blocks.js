@@ -8,6 +8,7 @@ const showUpQuestionBlock = function(X) {
   		}
   	},
   	{
+      "block_id": "showed_up",
   		"type": "actions",
   		"elements": [
   			{
