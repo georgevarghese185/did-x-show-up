@@ -16,6 +16,10 @@ const getServerConfig = async function() {
       throw new Error("slack_webhook missing from config");
     }
 
+    if(typeof serverConfig.x_name != "string") {
+      throw new Error("x_name missing from config");
+    }
+
     return serverConfig;
   } catch(e) {
     console.error(e)
