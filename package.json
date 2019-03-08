@@ -4,7 +4,8 @@
   "description": "Keep track of when X shows up and doesn't show up to work",
   "main": "src/index.js",
   "scripts": {
-    "start": "ENV=DEV node src/index.js"
+    "start": "ENV=DEV node src/index.js",
+    "local-tunnel": "node src/localTunnel.js"
   },
   "author": "George Varghese M",
   "license": "UNLICENSED",
