@@ -15,7 +15,6 @@ const routeHandler = (handler, state) => {
 
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
-  console.log(state.serverConfig.interaction_path)
   app.get(state.serverConfig.interaction_path, routeHandler(interaction, state));
 }
 

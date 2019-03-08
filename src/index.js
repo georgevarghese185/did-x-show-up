@@ -4,7 +4,7 @@ const ngrok = require('ngrok');
 const Sequelize = require('./db/sequelize');
 const Middleware = require('./middleware');
 const Routes = require('./routes');
-const {readFile} = require('./utils/file')
+const {getServerConfig} = require('./utils/configs')
 
 const app = express();
 const PORT = 4000;
@@ -13,7 +13,7 @@ const start = async (app) => {
   console.log("Setting up Sequelize");
   const {sequelize, models} = await Sequelize.setupSequelize();
 
-  let serverConfig = JSON.parse(await readFile(process.env.SERVER_CONFIG));
+  let serverConfig = await getServerConfig();
 
   console.log("\nSetting up Express");
   Middleware(app, sequelize);

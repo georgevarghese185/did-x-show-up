@@ -1,10 +1,9 @@
 const Sequelize = require('sequelize');
 const Models = require('./models');
-const readFile = require('../utils/file.js').readFile;
+const {getDbConfig} = require('../utils/configs')
 
 const setupSequelize = async () => {
-  const configFile = await readFile(process.env.DB_CONFIG);
-  const dbConfig = JSON.parse(configFile);
+  const dbConfig = await getDbConfig();
 
   const sequelize = new Sequelize(
     dbConfig.database,
