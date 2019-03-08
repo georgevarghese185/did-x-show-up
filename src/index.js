@@ -1,4 +1,5 @@
 const express = require('express');
+const ngrok = require('ngrok');
 
 const Sequelize = require('./db/sequelize');
 const Middleware = require('./middleware');
@@ -22,6 +23,11 @@ const start = async (app) => {
   await new Promise((resolve, reject) => {app.listen(PORT, resolve)});
   console.log("\nServer Started!");
   console.log(`\n\nListening on ${PORT}`);
+
+  if(process.env.ENV === "DEV") {
+    const publicUrl = await ngrok.connect();
+    console.log("Public URL: " + publicUrl)
+  }
 }
 
 start(app)
