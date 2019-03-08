@@ -12,7 +12,7 @@ const AttendanceModel = (sequelize) => {
       allowNull: false
     },
     showed_up_history: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT('medium'),
       allowNull: false
     }
   });
