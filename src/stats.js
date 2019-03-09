@@ -15,11 +15,13 @@ const {timeZoneShift, getDateAsNumber} = require('./utils/time');
 */
 
 const getStats = async function(state) {
+  const currentStreak = await getCurrentStreak(state);
   const thisWeek = await getThisWeekCount(state);
   const last30Days = await getLast30DaysCount(state);
   const yearShowUpRate = await getYearShowUpRate(state);
 
   return {
+    currentStreak,
     showUpCount: {
       thisWeek,
       last30Days
@@ -71,6 +73,40 @@ const getCountBetween =  async function(start, end, state) {
   return entries.reduce((count, entry) => {
     return count + (entry.showed_up == "YES" ? 1 : 0)
   }, 0);
+}
+
+const getCurrentStreak = async function(state) {
+  const Attendance = state.models.Attendance;
+
+  let offset = 0;
+  let batches = 365;
+  let count = 0;
+
+  const getNextBatch = async function() {
+    const entries = await Attendance.findAll({
+      order: [['date', 'DESC']],
+      limit: batches,
+      offset: offset
+    });
+
+    offset += entries.length;
+    return entries;
+  }
+
+  let entries = await getNextBatch();
+  while(entries.length > 0) {
+    for(let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+      if(entry.showed_up == "NO") {
+        break;
+      } else if(entry.showed_up == "YES") {
+        count++;
+      }
+    }
+    entries = await getNextBatch();
+  }
+
+  return count;
 }
 
 module.exports = {
