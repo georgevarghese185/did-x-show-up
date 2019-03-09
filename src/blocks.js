@@ -26,13 +26,31 @@ const showUpQuestionBlock = function(X) {
   					"text": "No"
   				},
   				"action_id": "x_no_show"
+  			},
+        {
+  				"type": "button",
+  				"text": {
+  					"type": "plain_text",
+  					"text": "Excused"
+  				},
+  				"action_id": "x_excuse"
   			}
   		]
   	}
   ]
 }
 
-const showUpResponseBlock = function(X, showedUp, stats) {
+const showUpResponseBlock = function(X, action, stats) {
+  let text;
+
+  if(action == "x_show") {
+    text = `*Yay! ${X} showed up! :smile:*`;
+  } else if(action == "x_no_show") {
+    text = `*${X} didn't show up :white_frowning_face:*`;
+  } else {
+    text = `*${X} is excused for today :upside_down_face:*`
+  }
+
   return [
   	{
   		"type": "divider"
@@ -41,7 +59,7 @@ const showUpResponseBlock = function(X, showedUp, stats) {
   		"type": "section",
   		"text": {
   			"type": "mrkdwn",
-  			"text": showedUp ? `*Yay! ${X} showed up! :smile:*` : `*${X} didn't show up :white_frowning_face:*`
+  			"text": text
   		}
   	},
     {

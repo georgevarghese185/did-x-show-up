@@ -2,7 +2,6 @@ const {postMessage} = require('./message');
 const {showUpQuestionBlock, showUpResponseBlock} = require('./blocks')
 
 const interaction = async function(req, state) {
-  const Attendance = state.models.Attendance;
   const payload = JSON.parse(req.body.payload);
 
   const action = payload.actions
@@ -13,6 +12,17 @@ const interaction = async function(req, state) {
     return "";
   }
 
+  if(action.action_id == "x_show" || action.action_id == "x_no_show") {
+    await recordAttendance(payload, action, state);
+  }
+
+  sendResponse(payload, action.action_id, state).then(console.log).catch(console.error);
+
+  return "ok"
+}
+
+const recordAttendance = async function(payload, action, state) {
+  const Attendance = state.models.Attendance;
   const showedUp = action.action_id == "x_show";
 
   const messageTimeStamp = parseInt(payload.message.ts) * 1000;
@@ -49,16 +59,12 @@ const interaction = async function(req, state) {
       ])
     })
   }
-
-  sendResponse(payload, showedUp, state).then(console.log).catch(console.error);
-
-  return "ok"
 }
 
-const sendResponse = async function(payload, showedUp, state) {
+const sendResponse = async function(payload, actionId, state) {
   const xName = state.serverConfig.x_name;
   const questionBlock = showUpQuestionBlock(xName);
-  const responseBlock = showUpResponseBlock(xName, showedUp, {
+  const responseBlock = showUpResponseBlock(xName, actionId, {
     currentStreak: "3",
     longestStreak: "5",
     showUpCount: {
