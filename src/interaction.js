@@ -12,9 +12,7 @@ const interaction = async function(req, state) {
     return "";
   }
 
-  if(action.action_id == "x_show" || action.action_id == "x_no_show") {
-    await recordAttendance(payload, action, state);
-  }
+  await recordAttendance(payload, action, state);
 
   sendResponse(payload, action.action_id, state).then(console.log).catch(console.error);
 
@@ -23,7 +21,8 @@ const interaction = async function(req, state) {
 
 const recordAttendance = async function(payload, action, state) {
   const Attendance = state.models.Attendance;
-  const showedUp = action.action_id == "x_show";
+  const showedUp = action.action_id == "x_show" ? "YES"
+    : (action.action_id == "x_no_show" ? "NO" : "EXCUSED");
 
   const messageTimeStamp = parseInt(payload.message.ts) * 1000;
   const timeZone = state.serverConfig.time_zone || 0;
