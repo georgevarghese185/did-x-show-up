@@ -17,12 +17,14 @@ const {timeZoneShift, getDateAsNumber} = require('./utils/time');
 const getStats = async function(state) {
   const thisWeek = await getThisWeekCount(state);
   const last30Days = await getLast30DaysCount(state);
+  const yearShowUpRate = await getYearShowUpRate(state);
 
   return {
     showUpCount: {
       thisWeek,
       last30Days
-    }
+    },
+    yearShowUpRate
   }
 }
 
@@ -43,8 +45,18 @@ const getLast30DaysCount = async function(state) {
   return getCountBetween(getDateAsNumber(start) + 1, getDateAsNumber(nowLocal), state);
 }
 
+const getYearShowUpRate = async function(state) {
+  const nowLocal = new Date(timeZoneShift(Date.now(), state));
+
+  const start = new Date(nowLocal.getFullYear() + "-01-01");
+  const daysBetween = Math.ceil((nowLocal.getTime() - start.getTime())/1000/60/60/24);
+
+  const count = await getCountBetween(getDateAsNumber(start), getDateAsNumber(nowLocal), state);
+  const ratePercent = (count/daysBetween)*100;
+  return Math.round(ratePercent * 100)/100;
+}
+
 const getCountBetween =  async function(start, end, state) {
-  console.log("Finding count between " + start + " and " + end)
   const Attendance = state.models.Attendance;
 
   let entries = await Attendance.findAll({
