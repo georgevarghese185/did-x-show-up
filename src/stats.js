@@ -52,14 +52,32 @@ const getLast30DaysCount = async function(state) {
 }
 
 const getYearShowUpRate = async function(state) {
+  const Attendance = state.models.Attendance;
   const nowLocal = new Date(timeZoneShift(Date.now(), state));
 
   const start = new Date(nowLocal.getFullYear() + "-01-01");
   const daysBetween = Math.ceil((nowLocal.getTime() - start.getTime())/1000/60/60/24);
 
-  const count = await getCountBetween(getDateAsNumber(start), getDateAsNumber(nowLocal), state);
-  const ratePercent = (count/daysBetween)*100;
-  return Math.round(ratePercent * 100)/100;
+  const entries = await Attendance.findAll({
+    where: {
+      date: {
+        [Op.gte]: getDateAsNumber(start),
+        [Op.lte]: getDateAsNumber(nowLocal)
+      }
+    }
+  });
+
+  const {total, showedUp} = entries.reduce((count, entry) => {
+    if(entry.showed_up == "YES" || entry.showed_up == "NO") {
+      count.total++;
+      if(entry.showed_up == "YES") {
+        count.showedUp++;
+      }
+    }
+    return count;
+  }, {total: 0, showedUp: 0});
+
+  return Math.round(showedUp/total*100*100) / 100;
 }
 
 const getCountBetween =  async function(start, end, state) {
