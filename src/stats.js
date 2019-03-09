@@ -16,12 +16,14 @@ const {timeZoneShift, getDateAsNumber} = require('./utils/time');
 
 const getStats = async function(state) {
   const currentStreak = await getCurrentStreak(state);
+  const longestStreak = await getLongestStreak(state);
   const thisWeek = await getThisWeekCount(state);
   const last30Days = await getLast30DaysCount(state);
   const yearShowUpRate = await getYearShowUpRate(state);
 
   return {
     currentStreak,
+    longestStreak,
     showUpCount: {
       thisWeek,
       last30Days
@@ -75,12 +77,11 @@ const getCountBetween =  async function(start, end, state) {
   }, 0);
 }
 
-const getCurrentStreak = async function(state) {
+const batchProcessor = function(state) {
   const Attendance = state.models.Attendance;
 
   let offset = 0;
   let batches = 365;
-  let count = 0;
 
   const getNextBatch = async function() {
     const entries = await Attendance.findAll({
@@ -93,12 +94,43 @@ const getCurrentStreak = async function(state) {
     return entries;
   }
 
+  return getNextBatch;
+}
+
+const getCurrentStreak = async function(state) {
+  const getNextBatch = batchProcessor(state);
+
+  let count = 0;
   let entries = await getNextBatch();
+
   while(entries.length > 0) {
     for(let i = 0; i < entries.length; i++) {
       const entry = entries[i];
       if(entry.showed_up == "NO") {
         break;
+      } else if(entry.showed_up == "YES") {
+        count++;
+      }
+    }
+    entries = await getNextBatch();
+  }
+
+  return count;
+}
+
+const getLongestStreak = async function(state) {
+  const getNextBatch = batchProcessor(state);
+
+  let count = 0;
+  let longestStreak = 0;
+  let entries = await getNextBatch();
+
+  while(entries.length > 0) {
+    for(let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+      if(entry.showed_up == "NO") {
+        if(count > longestStreak) longestStreak = count;
+        count = 0;
       } else if(entry.showed_up == "YES") {
         count++;
       }

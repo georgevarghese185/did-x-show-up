@@ -63,18 +63,8 @@ const sendResponse = async function(payload, actionId, state) {
 
   const stats = await getStats(state);
 
-  console.log(stats);
-
   const questionBlock = showUpQuestionBlock(xName);
-  const responseBlock = showUpResponseBlock(xName, actionId, {
-    currentStreak: "3",
-    longestStreak: "5",
-    showUpCount: {
-      thisWeek: "2",
-      last30Days: "4"
-    },
-    yearShowUpRate: "89"
-  });
+  const responseBlock = showUpResponseBlock(xName, actionId, stats);
   const blocks = questionBlock.concat(responseBlock);
 
   const message = {
