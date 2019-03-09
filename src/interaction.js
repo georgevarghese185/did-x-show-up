@@ -1,3 +1,5 @@
+const {postMessage} = require('./message');
+const {showUpQuestionBlock, showUpResponseBlock} = require('./blocks')
 
 const interaction = async function(req, state) {
   const Attendance = state.models.Attendance;
@@ -46,7 +48,30 @@ const interaction = async function(req, state) {
     })
   }
 
+  sendResponse(payload, showedUp, state).then(console.log).catch(console.error);
+
   return "ok"
+}
+
+const sendResponse = async function(payload, showedUp, state) {
+  const xName = state.serverConfig.x_name;
+  const questionBlock = showUpQuestionBlock(xName);
+  const responseBlock = showUpResponseBlock(xName, showedUp, {
+    currentStreak: "3",
+    longestStreak: "5",
+    showUpCount: {
+      thisWeek: "2",
+      last30Days: "4"
+    },
+    yearShowUpRate: "89"
+  });
+  const blocks = questionBlock.concat(responseBlock);
+
+  const message = {
+    blocks
+  }
+
+  return postMessage(message, payload.response_url);
 }
 
 module.exports = {

@@ -32,7 +32,7 @@ const showUpQuestionBlock = function(X) {
   ]
 }
 
-const showUpResponseBlock = function(X) {
+const showUpResponseBlock = function(X, showedUp, stats) {
   return [
   	{
   		"type": "divider"
@@ -41,21 +41,20 @@ const showUpResponseBlock = function(X) {
   		"type": "section",
   		"text": {
   			"type": "mrkdwn",
-  			"text": `*Yay! ${X} showed up! :smile:*`
+  			"text": showedUp ? `*Yay! ${X} showed up! :smile:*` : `*${X} didn't show up :white_frowning_face:*`
   		}
   	},
-      {
+    {
   		"type": "section",
   		"text": {
   			"type": "mrkdwn",
-  			"text": `*${X} didn't show up :white_frowning_face:*`
-  		}
-  	},
-  	{
-  		"type": "section",
-  		"text": {
-  			"type": "mrkdwn",
-  			"text": `\n\n_${X}'s current streak_: *N*\n_${X}'s longest streak_: *N*\n_${X} showed up_ *N* _times this week_\n_${X} showed up_ *N* _times in the last 30 days_\n_${X}'s show-up-rate this year so far is_ *N*%`
+  			"text": `
+
+_${X}'s current streak_: *${stats.currentStreak}*
+_${X}'s longest streak_: *${stats.longestStreak}*
+_${X} showed up_ *${stats.showUpCount.thisWeek}* _times this week_
+_${X} showed up_ *${stats.showUpCount.last30Days}* _times in the last 30 days_
+_${X}'s show-up-rate this year so far is_ *${stats.yearShowUpRate}*%`
   		}
   	}
   ]

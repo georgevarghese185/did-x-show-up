@@ -1,13 +1,7 @@
 const fetch = require('node-fetch');
 const {showUpQuestionBlock} = require('./blocks');
 
-const postMessage = async function(req, state) {
-  const url = state.serverConfig.slack_webhook;
-  const xName = state.serverConfig.x_name;
-
-  const message = {
-    blocks: showUpQuestionBlock(xName)
-  }
+const postMessage = async function(message, url) {
 
   const response = await fetch(url, {
     method: "POST",
@@ -19,9 +13,21 @@ const postMessage = async function(req, state) {
 
   const responseText = await response.text();
 
-  return responseText
+  return responseText;
+}
+
+const postShowUpQuestion = async function(req, state) {
+  const url = state.serverConfig.slack_webhook;
+  const xName = state.serverConfig.x_name;
+
+  const message = {
+    blocks: showUpQuestionBlock(xName)
+  }
+
+  return postMessage(message, url);
 }
 
 module.exports = {
-  postMessage
+  postMessage,
+  postShowUpQuestion
 }
