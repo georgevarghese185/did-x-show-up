@@ -35,8 +35,10 @@ const getStats = async function(state) {
 const getThisWeekCount = async function(state) {
   const nowLocal = new Date(timeZoneShift(Date.now(), state));
 
-  const startOfWeek = new Date(nowLocal.getTime() - nowLocal.getDay()*24*60*60*1000);
-  const endOfWeek = new Date(nowLocal.getTime() + (7 - nowLocal.getDay())*24*60*60*1000);
+  const startOfWeek = new Date(nowLocal.getTime() - nowLocal.getUTCDay()*24*60*60*1000);
+  const endOfWeek = new Date(nowLocal.getTime() + (6 - nowLocal.getUTCDay())*24*60*60*1000);
+
+  console.log(startOfWeek + " " + endOfWeek)
 
   return getCountBetween(getDateAsNumber(startOfWeek) + 1, getDateAsNumber(endOfWeek), state);
 }
