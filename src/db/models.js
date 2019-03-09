@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const AttendanceModel = (sequelize) => {
   return sequelize.define('attendance', {
     date: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       allowNull: false,
       primaryKey: true
     },

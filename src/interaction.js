@@ -20,7 +20,9 @@ const interaction = async function(req, state) {
   const timeZoneShift = timeZone * 60 * 60 * 1000;
   const messageTimeLocal = new Date(messageTimeStamp + timeZoneShift);
 
-  const messageDateLocal = messageTimeLocal.toISOString().substring(0, 10);
+  const messageDateLocal = parseInt(
+    messageTimeLocal.toISOString().substring(0, 10).replace(/\-/g, "")
+  );
 
   let attendanceEntry = await Attendance.findOne({where: {date: messageDateLocal}});
   if(attendanceEntry) {
