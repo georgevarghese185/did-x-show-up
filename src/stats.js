@@ -140,7 +140,7 @@ const getLongestStreak = async function(state) {
     entries = await getNextBatch();
   }
 
-  return count;
+  return longestStreak;
 }
 
 module.exports = {
