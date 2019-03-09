@@ -1,5 +1,7 @@
 const {postMessage} = require('./message');
 const {showUpQuestionBlock, showUpResponseBlock} = require('./blocks')
+const {timeZoneShift, getDateAsNumber} = require('./utils/time');
+const {getStats} = require('./stats');
 
 const interaction = async function(req, state) {
   const payload = JSON.parse(req.body.payload);
@@ -24,14 +26,10 @@ const recordAttendance = async function(payload, action, state) {
   const showedUp = action.action_id == "x_show" ? "YES"
     : (action.action_id == "x_no_show" ? "NO" : "EXCUSED");
 
-  const messageTimeStamp = parseInt(payload.message.ts) * 1000;
-  const timeZone = state.serverConfig.time_zone || 0;
-  const timeZoneShift = timeZone * 60 * 60 * 1000;
-  const messageTimeLocal = new Date(messageTimeStamp + timeZoneShift);
+  const messageTimeMillis = parseInt(payload.message.ts) * 1000;
+  const messageTimeLocal = new Date(timeZoneShift(messageTimeMillis, state));
 
-  const messageDateLocal = parseInt(
-    messageTimeLocal.toISOString().substring(0, 10).replace(/\-/g, "")
-  );
+  const messageDateLocal = getDateAsNumber(messageTimeLocal);
 
   let attendanceEntry = await Attendance.findOne({where: {date: messageDateLocal}});
   if(attendanceEntry) {
