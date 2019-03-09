@@ -60,6 +60,11 @@ const recordAttendance = async function(payload, action, state) {
 
 const sendResponse = async function(payload, actionId, state) {
   const xName = state.serverConfig.x_name;
+
+  const stats = await getStats(state);
+
+  console.log(stats);
+
   const questionBlock = showUpQuestionBlock(xName);
   const responseBlock = showUpResponseBlock(xName, actionId, {
     currentStreak: "3",
