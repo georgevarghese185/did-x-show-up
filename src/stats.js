@@ -161,6 +161,7 @@ const getLongestStreak = async function(x, state) {
         count = 0;
       } else if(entry.showed_up == "YES") {
         count++;
+        if(count > longestStreak) longestStreak = count;
       }
     }
     entries = await getNextBatch();
