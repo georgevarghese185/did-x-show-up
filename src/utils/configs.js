@@ -8,8 +8,8 @@ const getServerConfig = async function() {
   let serverConfig;
   try {
     serverConfig = JSON.parse(await readFile(process.env.SERVER_CONFIG || DEFAULT_SERVER_CONFIG_PATH));
-    if(typeof serverConfig.interaction_path != "string") {
-      throw new Error("interaction_path missing from config");
+    if(typeof serverConfig.interaction_id != "string") {
+      throw new Error("interaction_id missing from config");
     }
 
     if(typeof serverConfig.slack_webhook != "string") {
