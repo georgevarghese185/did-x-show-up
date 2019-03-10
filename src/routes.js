@@ -17,7 +17,7 @@ const routeHandler = (handler, state) => {
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
   app.post(state.serverConfig.interaction_path, routeHandler(interaction, state));
-  app.get('/postShowUpQuestion', routeHandler(postShowUpQuestion, state))
+  app.post('/postShowUpQuestion', routeHandler(postShowUpQuestion, state))
 }
 
 module.exports = setupRoutes;
