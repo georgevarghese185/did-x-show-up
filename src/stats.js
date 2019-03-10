@@ -14,12 +14,12 @@ const {timeZoneShift, getDateAsNumber} = require('./utils/time');
 
 */
 
-const getStats = async function(state) {
-  const currentStreak = await getCurrentStreak(state);
-  const longestStreak = await getLongestStreak(state);
-  const thisWeek = await getThisWeekCount(state);
-  const last30Days = await getLast30DaysCount(state);
-  const yearShowUpRate = await getYearShowUpRate(state);
+const getStats = async function(x, state) {
+  const currentStreak = await getCurrentStreak(x, state);
+  const longestStreak = await getLongestStreak(x, state);
+  const thisWeek = await getThisWeekCount(x, state);
+  const last30Days = await getLast30DaysCount(x, state);
+  const yearShowUpRate = await getYearShowUpRate(x, state);
 
   return {
     currentStreak,
@@ -32,7 +32,7 @@ const getStats = async function(state) {
   }
 }
 
-const getThisWeekCount = async function(state) {
+const getThisWeekCount = async function(x, state) {
   const nowLocal = new Date(timeZoneShift(Date.now(), state));
   const day = (nowLocal.getUTCDay() + 6) % 7; //We want Monday to be represented as 0
 
@@ -41,18 +41,18 @@ const getThisWeekCount = async function(state) {
 
   console.log(startOfWeek + " " + endOfWeek)
 
-  return getCountBetween(getDateAsNumber(startOfWeek), getDateAsNumber(endOfWeek), state);
+  return getCountBetween(x, getDateAsNumber(startOfWeek), getDateAsNumber(endOfWeek), state);
 }
 
-const getLast30DaysCount = async function(state) {
+const getLast30DaysCount = async function(x, state) {
   const nowLocal = new Date(timeZoneShift(Date.now(), state));
 
   const start = new Date(nowLocal.getTime() - 30*24*60*60*1000);
 
-  return getCountBetween(getDateAsNumber(start) + 1, getDateAsNumber(nowLocal), state);
+  return getCountBetween(x, getDateAsNumber(start) + 1, getDateAsNumber(nowLocal), state);
 }
 
-const getYearShowUpRate = async function(state) {
+const getYearShowUpRate = async function(x, state) {
   const Attendance = state.models.Attendance;
   const nowLocal = new Date(timeZoneShift(Date.now(), state));
 
@@ -64,7 +64,8 @@ const getYearShowUpRate = async function(state) {
       date: {
         [Op.gte]: getDateAsNumber(start),
         [Op.lte]: getDateAsNumber(nowLocal)
-      }
+      },
+      user_name: x
     }
   });
 
@@ -85,7 +86,7 @@ const getYearShowUpRate = async function(state) {
   }
 }
 
-const getCountBetween =  async function(start, end, state) {
+const getCountBetween =  async function(x, start, end, state) {
   const Attendance = state.models.Attendance;
 
   let entries = await Attendance.findAll({
@@ -93,7 +94,8 @@ const getCountBetween =  async function(start, end, state) {
       date: {
         [Op.gte]: start,
         [Op.lte]: end
-      }
+      },
+      user_name: x
     }
   });
 
@@ -102,7 +104,7 @@ const getCountBetween =  async function(start, end, state) {
   }, 0);
 }
 
-const batchProcessor = function(state) {
+const batchProcessor = function(x, state) {
   const Attendance = state.models.Attendance;
 
   let offset = 0;
@@ -110,6 +112,7 @@ const batchProcessor = function(state) {
 
   const getNextBatch = async function() {
     const entries = await Attendance.findAll({
+      where: {user_name: x},
       order: [['date', 'DESC']],
       limit: batches,
       offset: offset
@@ -122,8 +125,8 @@ const batchProcessor = function(state) {
   return getNextBatch;
 }
 
-const getCurrentStreak = async function(state) {
-  const getNextBatch = batchProcessor(state);
+const getCurrentStreak = async function(x, state) {
+  const getNextBatch = batchProcessor(x, state);
 
   let count = 0;
   let entries = await getNextBatch();
@@ -143,8 +146,8 @@ const getCurrentStreak = async function(state) {
   return count;
 }
 
-const getLongestStreak = async function(state) {
-  const getNextBatch = batchProcessor(state);
+const getLongestStreak = async function(x, state) {
+  const getNextBatch = batchProcessor(x, state);
 
   let count = 0;
   let longestStreak = 0;

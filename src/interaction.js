@@ -72,7 +72,7 @@ const recordAttendance = async function(payload, action, x, state) {
 
 const sendResponse = async function(payload, actionId, x, state) {
   const Users = state.models.Users;
-  const stats = await getStats(state);
+  const stats = await getStats(x, state);
 
   const questionBlock = showUpQuestionBlock(x, true);
   const responseBlock = showUpResponseBlock(x, actionId, stats);
