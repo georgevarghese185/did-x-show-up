@@ -2,14 +2,10 @@ const Sequelize = require('sequelize');
 
 const UsersModel = (sequelize) => {
   return sequelize.define('users', {
-    user_id: {
+    name: {
       type: Sequelize.STRING,
       allowNull: false,
       primaryKey: true
-    },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false
     },
     config: {
       type: Sequelize.TEXT('medium'),
@@ -25,7 +21,7 @@ const AttendanceModel = (sequelize) => {
       allowNull: false,
       primaryKey: true
     },
-    user_id: {
+    user_name: {
       type: Sequelize.STRING,
       allowNull: false
     },
@@ -40,9 +36,24 @@ const AttendanceModel = (sequelize) => {
   });
 }
 
+const QuestionsModel = (sequelize) => {
+  return sequelize.define('questions', {
+    ts: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      primaryKey: true
+    },
+    user_name: {
+      type: Sequelize.STRING,
+      allowNull: false
+    }
+  });
+}
+
 module.exports = function(sequelize) {
   return {
     Users: UsersModel(sequelize),
+    Questions: QuestionsModel(sequelize),
     Attendance: AttendanceModel(sequelize)
   }
 }

@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const {showUpQuestionBlock} = require('./blocks');
+const {SHOW_UP_QUESTION} = require('./utils/constants')
 
 const postMessage = async function(message, url) {
 
@@ -33,30 +34,33 @@ const postBotMessage = async function(payload, url, token) {
 
 const ask = async function(req, state) {
   const Users = state.models.Users;
+  const Questions = state.models.Questions;
   const url = "https://slack.com/api/chat.postMessage";
   const token = state.serverConfig.bot_token;
   const channel_id = req.body.channel_id;
-  const user_id = req.body.user_id;
   const user_name = req.body.user_name;
 
-  const userEntry = await Users.findOne({where: {user_id}});
+  const userEntry = await Users.findOne({where: {name: user_name}});
   if(!userEntry) {
-    await Users.create({user_id, name: user_name, config: JSON.stringify({})});
-  } else {
-    if(userEntry.name != user_name) {
-      await userEntry.update({name: user_name});
-    }
+    await Users.create({name: user_name, config: JSON.stringify({})});
   }
-
-
 
   const payload = {
     channel: channel_id,
-    blocks: showUpQuestionBlock(user_id),
-    username: `Did ${user_name} show up?`
+    blocks: showUpQuestionBlock(user_name),
+    username: SHOW_UP_QUESTION.replace("{{X}}", user_name)
   }
 
-  return postBotMessage(payload, url, token);
+  postBotMessage(payload, url, token)
+    .then(response => {
+      const responsePayload = JSON.parse(response);
+      if(responsePayload.ok) {
+        const ts = responsePayload.ts;
+        return Questions.create({user_name, ts});
+      } else {
+        console.error(response);
+      }
+    }).catch(console.error);
 }
 
 module.exports = {

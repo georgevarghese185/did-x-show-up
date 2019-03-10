@@ -1,10 +1,10 @@
-const showUpQuestionBlock = function(x_id) {
+const showUpQuestionBlock = function(x) {
   return [
   	{
   		"type": "section",
   		"text": {
   			"type": "mrkdwn",
-  			"text": `Did <@${x_id}> show up to work today?`
+  			"text": `Did ${x} show up to work today?`
   		}
   	},
   	{
@@ -40,15 +40,15 @@ const showUpQuestionBlock = function(x_id) {
   ]
 }
 
-const showUpResponseBlock = function(x_id, action, stats) {
+const showUpResponseBlock = function(x, action, stats) {
   let text;
 
   if(action == "x_show") {
-    text = `*Yay! <@${x_id}> showed up! :smile:*`;
+    text = `*Yay! ${x} showed up! :smile:*`;
   } else if(action == "x_no_show") {
-    text = `*<@${x_id}> didn't show up :white_frowning_face:*`;
+    text = `*${x} didn't show up :white_frowning_face:*`;
   } else {
-    text = `*<@${x_id}> is excused for today :upside_down_face:*`
+    text = `*${x} is excused for today :upside_down_face:*`
   }
 
   return [
@@ -68,11 +68,11 @@ const showUpResponseBlock = function(x_id, action, stats) {
   			"type": "mrkdwn",
   			"text": `
 
-_<@${x_id}>'s current streak_: *${stats.currentStreak}*
-_<@${x_id}>'s longest streak_: *${stats.longestStreak}*
-_<@${x_id}> showed up_ *${stats.showUpCount.thisWeek}* _times this week_
-_<@${x_id}> showed up_ *${stats.showUpCount.last30Days}* _times in the last 30 days_
-_<@${x_id}>'s show-up-rate this year so far is_ *${stats.yearShowUpRate}*%`
+_${x}'s current streak_: *${stats.currentStreak}*
+_${x}'s longest streak_: *${stats.longestStreak}*
+_${x} showed up_ *${stats.showUpCount.thisWeek}* _times this week_
+_${x} showed up_ *${stats.showUpCount.last30Days}* _times in the last 30 days_
+_${x}'s show-up-rate this year so far is_ *${stats.yearShowUpRate}*%`
   		}
   	}
   ]
