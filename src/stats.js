@@ -78,7 +78,11 @@ const getYearShowUpRate = async function(state) {
     return count;
   }, {total: 0, showedUp: 0});
 
-  return Math.round(showedUp/total*100*100) / 100;
+  if(total == 0) {
+    return 0;
+  } else {
+    return Math.round(showedUp/total*100*100) / 100;
+  }
 }
 
 const getCountBetween =  async function(start, end, state) {
