@@ -12,8 +12,8 @@ const getServerConfig = async function() {
       throw new Error("interaction_id missing from config");
     }
 
-    if(typeof serverConfig.slack_webhook != "string") {
-      throw new Error("slack_webhook missing from config");
+    if(typeof serverConfig.command_id != "string") {
+      throw new Error("command_id missing from config");
     }
 
     if(typeof serverConfig.bot_token != "string") {

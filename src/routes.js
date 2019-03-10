@@ -1,6 +1,7 @@
 const errorHandler = require('./utils/errors').errorHandler;
 const {interaction} = require('./interaction');
 const {ask} = require('./message');
+const {command} = require('./command');
 
 const routeHandler = (handler, state) => {
 
@@ -17,6 +18,7 @@ const routeHandler = (handler, state) => {
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
   app.post("/interaction/" + state.serverConfig.interaction_id, routeHandler(interaction, state));
+  app.post("/command/" + state.serverConfig.command_id + "/*", routeHandler(command, state))
   app.post('/ask', routeHandler(ask, state))
 }
 
