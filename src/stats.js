@@ -34,13 +34,14 @@ const getStats = async function(state) {
 
 const getThisWeekCount = async function(state) {
   const nowLocal = new Date(timeZoneShift(Date.now(), state));
+  const day = (nowLocal.getUTCDay() + 6) % 7; //We want Monday to be represented as 0
 
-  const startOfWeek = new Date(nowLocal.getTime() - nowLocal.getUTCDay()*24*60*60*1000);
-  const endOfWeek = new Date(nowLocal.getTime() + (6 - nowLocal.getUTCDay())*24*60*60*1000);
+  const startOfWeek = new Date(nowLocal.getTime() - day*24*60*60*1000);
+  const endOfWeek = new Date(nowLocal.getTime() + (6 - day)*24*60*60*1000);
 
   console.log(startOfWeek + " " + endOfWeek)
 
-  return getCountBetween(getDateAsNumber(startOfWeek) + 1, getDateAsNumber(endOfWeek), state);
+  return getCountBetween(getDateAsNumber(startOfWeek), getDateAsNumber(endOfWeek), state);
 }
 
 const getLast30DaysCount = async function(state) {
