@@ -1,6 +1,6 @@
 const errorHandler = require('./utils/errors').errorHandler;
 const {interaction} = require('./interaction');
-const {postShowUpQuestion} = require('./message');
+const {ask} = require('./message');
 
 const routeHandler = (handler, state) => {
 
@@ -17,7 +17,7 @@ const routeHandler = (handler, state) => {
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
   app.post("/interaction/" + state.serverConfig.interaction_id, routeHandler(interaction, state));
-  app.post('/postShowUpQuestion', routeHandler(postShowUpQuestion, state))
+  app.post('/ask', routeHandler(ask, state))
 }
 
 module.exports = setupRoutes;

@@ -31,7 +31,7 @@ const postBotMessage = async function(payload, url, token) {
   return responseText;
 }
 
-const postShowUpQuestion = async function(req, state) {
+const ask = async function(req, state) {
   const url = "https://slack.com/api/chat.postMessage";
   const token = state.serverConfig.bot_token;
   const xName = state.serverConfig.x_name;
@@ -46,5 +46,5 @@ const postShowUpQuestion = async function(req, state) {
 
 module.exports = {
   postMessage,
-  postShowUpQuestion
+  ask
 }
