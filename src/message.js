@@ -78,5 +78,6 @@ const ask = async function(req, state) {
 
 module.exports = {
   postMessage,
+  postBotMessage,
   ask
 }

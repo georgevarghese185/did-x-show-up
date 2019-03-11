@@ -1,4 +1,4 @@
-const {postMessage} = require('./message');
+const {postMessage, postBotMessage} = require('./message');
 const {showUpQuestionBlock, showUpResponseBlock} = require('./blocks')
 const {timeZoneShift, getDateAsNumber} = require('./utils/time');
 const {getStats} = require('./stats');
@@ -8,6 +8,15 @@ const interaction = async function(req, state) {
   const Questions = state.models.Questions;
   const payload = JSON.parse(req.body.payload);
   let x;
+
+  if(state.serverConfig.blocked_users.indexOf(payload.user.id) > -1) {
+    postBotMessage({
+      channel: payload.container.channel_id,
+      user: payload.user.id,
+      text: "You are not allowed to vote"
+    }, "https://slack.com/api/chat.postEphemeral", state.serverConfig.bot_token)
+    return ""
+  }
 
   const question = await Questions.findOne({where: {ts: payload.message.ts}});
   if(!question) {
