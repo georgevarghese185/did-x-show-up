@@ -1,4 +1,6 @@
 const {readFile} = require('./file');
+const ServerConfig = require('../../configs/server');
+const DBConfig = require('../../configs/db');
 const path = require('path');
 
 const DEFAULT_SERVER_CONFIG_PATH = path.join(__dirname, "../../configs/sensitive/server-config.json")
@@ -7,7 +9,10 @@ const DEFAULT_DB_CONFIG_PATH = path.join(__dirname, "../../configs/sensitive/db-
 const getServerConfig = async function() {
   let serverConfig;
   try {
-    serverConfig = JSON.parse(await readFile(process.env.SERVER_CONFIG || DEFAULT_SERVER_CONFIG_PATH));
+    if(typeof ServerConfig.getConfig != "function") {
+      throw new Error("/configs/server.js should export a `getConfig()` function")
+    }
+    serverConfig = ServerConfig.getConfig();
     if(typeof serverConfig.interaction_id != "string") {
       throw new Error("interaction_id missing from config");
     }
@@ -40,7 +45,10 @@ const getServerConfig = async function() {
 const getDbConfig = async function() {
   let serverConfig;
   try {
-    dbConfig = JSON.parse(await readFile(process.env.SERVER_CONFIG || DEFAULT_DB_CONFIG_PATH));
+    if(typeof DBConfig.getConfig != "function") {
+      throw new Error("/configs/db.js should export a `getConfig()` function")
+    }
+    dbConfig = DBConfig.getConfig();
     if(typeof dbConfig.username != "string") {
       throw new Error("username missing from db config");
     }
