@@ -39,6 +39,19 @@ const ask = async function(req, state) {
   const token = state.serverConfig.bot_token;
   const channel_id = req.body.channel_id;
   const user_name = req.body.user_name;
+  const asking_user_id = req.body.asking_user_id;
+
+  if(state.serverConfig.admins.indexOf(asking_user_id) == -1) {
+    console.log("User " + asking_user_id + " not allowed to ask")
+    postBotMessage({
+      text: "You are not allowed to ask",
+      user: asking_user_id,
+      channel: channel_id
+    }, "https://slack.com/api/chat.postEphemeral", token)
+      .then(console.log)
+      .catch(console.error);
+    return;
+  }
 
   const userEntry = await Users.findOne({where: {name: user_name}});
   if(!userEntry) {

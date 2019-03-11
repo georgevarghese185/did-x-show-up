@@ -31,9 +31,10 @@ const command = async function(req, state) {
 
 const ask = async function(req, state) {
   const user_name = req.body.text;
+  const asking_user_id = req.body.user_id;
   const channel_id = req.body.channel_id;
 
-  await message.ask({body: {user_name, channel_id}}, state);
+  await message.ask({body: {user_name, asking_user_id, channel_id}}, state);
 }
 
 module.exports = {

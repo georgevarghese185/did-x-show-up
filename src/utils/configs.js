@@ -20,6 +20,10 @@ const getServerConfig = async function() {
       throw new Error("bot_token missing from config");
     }
 
+    if(!Array.isArray(serverConfig.admins)) {
+      throw new Error("admins array missing from config");
+    }
+
     return serverConfig;
   } catch(e) {
     console.error(e)
