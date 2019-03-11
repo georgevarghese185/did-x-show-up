@@ -61,7 +61,7 @@ const ask = async function(req, state) {
   const payload = {
     channel: channel_id,
     blocks: showUpQuestionBlock(user_name),
-    username: SHOW_UP_QUESTION.replace("{{X}}", user_name)
+    username: `Did ${user_name} Show Up?`
   }
 
   postBotMessage(payload, url, token)
