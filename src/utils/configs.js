@@ -20,10 +20,6 @@ const getServerConfig = async function() {
       throw new Error("bot_token missing from config");
     }
 
-    if(typeof serverConfig.x_name != "string") {
-      throw new Error("x_name missing from config");
-    }
-
     return serverConfig;
   } catch(e) {
     console.error(e)
