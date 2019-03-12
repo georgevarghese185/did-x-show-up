@@ -41,7 +41,7 @@ const ask = async function(req, state, sync) {
   const user_name = req.body.user_name;
   const asking_user_id = req.body.asking_user_id;
 
-  if(state.serverConfig.admins.indexOf(asking_user_id) == -1) {
+  if((state.serverConfig.admins.indexOf(asking_user_id) == -1) && asking_user_id != "SCHEDULE") {
     console.log("User " + asking_user_id + " not allowed to ask")
     const postErrorMessage = postBotMessage({
       text: "You are not allowed to ask",
