@@ -32,7 +32,7 @@ const postBotMessage = async function(payload, url, token) {
   return responseText;
 }
 
-const ask = async function(req, state) {
+const ask = async function(req, state, sync) {
   const Users = state.models.Users;
   const Questions = state.models.Questions;
   const url = "https://slack.com/api/chat.postMessage";
@@ -43,13 +43,18 @@ const ask = async function(req, state) {
 
   if(state.serverConfig.admins.indexOf(asking_user_id) == -1) {
     console.log("User " + asking_user_id + " not allowed to ask")
-    postBotMessage({
+    const postErrorMessage = postBotMessage({
       text: "You are not allowed to ask",
       user: asking_user_id,
       channel: channel_id
-    }, "https://slack.com/api/chat.postEphemeral", token)
-      .then(console.log)
-      .catch(console.error);
+    }, "https://slack.com/api/chat.postEphemeral", token);
+
+    if(sync) {
+      await postErrorMessage;
+    } else {
+      postErrorMessage.then(console.log).catch(console.error);
+    }
+
     return;
   }
 
@@ -64,7 +69,7 @@ const ask = async function(req, state) {
     username: `Did ${user_name} Show Up?`
   }
 
-  postBotMessage(payload, url, token)
+  const postQuestion = postBotMessage(payload, url, token)
     .then(response => {
       const responsePayload = JSON.parse(response);
       if(responsePayload.ok) {
@@ -73,7 +78,13 @@ const ask = async function(req, state) {
       } else {
         console.error(response);
       }
-    }).catch(console.error);
+    });
+
+  if(sync) {
+    await postQuestion;
+  } else {
+    postQuestion.catch(console.error);
+  }
 }
 
 module.exports = {
