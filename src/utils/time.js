@@ -1,5 +1,8 @@
-const timeZoneShift = function(timeMillis, state) {
-  const timeZone = state.serverConfig.time_zone || 0;
+const timeZoneShift = function(timeMillis, state, reverse) {
+  let timeZone = state.serverConfig.time_zone || 0;
+  if(reverse) {
+    timeZone = -timeZone;
+  }
   return timeMillis + timeZone * 60 * 60 * 1000;
 }
 
