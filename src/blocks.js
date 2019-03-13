@@ -79,8 +79,8 @@ const showUpResponseBlock = function(x, action, stats) {
   			"type": "mrkdwn",
   			"text": `
 
-_${x}'s current streak_: *${stats.currentStreak}*
-_${x}'s longest streak_: *${stats.longestStreak}*
+_${x}'s current streak_: *${stats.currentStreak}* \t _${x}'s longest streak_: *${stats.longestStreak}*
+_${x}'s absent streak_: *${stats.currentNoShowStreak}* \t _${x}'s longest absent streak_: *${stats.longestNoShowStreak}*
 _${x} showed up_ *${stats.showUpCount.thisWeek}* _times this week_
 _${x} showed up_ *${stats.showUpCount.last30Days}* _times in the last 30 days_
 _${x}'s show-up-rate this year so far is_ *${stats.yearShowUpRate}*%`

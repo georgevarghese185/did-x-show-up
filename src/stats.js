@@ -15,15 +15,17 @@ const {timeZoneShift, getDateAsNumber} = require('./utils/time');
 */
 
 const getStats = async function(x, state) {
-  const currentStreak = await getCurrentStreak(x, state);
-  const longestStreak = await getLongestStreak(x, state);
   const thisWeek = await getThisWeekCount(x, state);
   const last30Days = await getLast30DaysCount(x, state);
   const yearShowUpRate = await getYearShowUpRate(x, state);
+  const {currentStreak, longestStreak, currentNoShowStreak, longestNoShowStreak}
+    = await getStreaks(batchProcessor(x, state));
 
   return {
     currentStreak,
     longestStreak,
+    currentNoShowStreak,
+    longestNoShowStreak,
     showUpCount: {
       thisWeek,
       last30Days
@@ -125,51 +127,67 @@ const batchProcessor = function(x, state) {
   return getNextBatch;
 }
 
-const getCurrentStreak = async function(x, state) {
-  const getNextBatch = batchProcessor(x, state);
+const getStreaks = async function(getNextBatch) {
+  let latest = null;
 
-  let count = 0;
+  let showStreaks = {
+    current: 0,
+    longest: 0,
+    count: 0,
+    streakBroken: false
+  }
+
+  let noShowStreaks = {
+    current: 0,
+    longest: 0,
+    count: 0,
+    streakBroken: false
+  }
+
   let entries = await getNextBatch();
-
   while(entries.length > 0) {
     for(let i = 0; i < entries.length; i++) {
       const entry = entries[i];
-      if(entry.showed_up == "NO") {
-        break;
-      } else if(entry.showed_up == "YES") {
-        count++;
+      if(entry.showed_up == "YES") {
+        if(!noShowStreaks.streakBroken) {
+          noShowStreaks.streakBroken = true;
+        }
+        noShowStreaks.count = 0;
+
+        if(!showStreaks.streakBroken) {
+          showStreaks.current++;
+        }
+        showStreaks.count++;
+        if(showStreaks.longest < showStreaks.count) {
+          showStreaks.longest = showStreaks.count;
+        }
+      } else if(entry.showed_up == "NO") {
+        if(!showStreaks.streakBroken) {
+          showStreaks.streakBroken = true;
+        }
+        showStreaks.count = 0;
+
+        if(!noShowStreaks.streakBroken) {
+          noShowStreaks.current++;
+        }
+        noShowStreaks.count++;
+        if(noShowStreaks.longest < noShowStreaks.count) {
+          noShowStreaks.longest = noShowStreaks.count;
+        }
       }
     }
     entries = await getNextBatch();
   }
 
-  return count;
-}
-
-const getLongestStreak = async function(x, state) {
-  const getNextBatch = batchProcessor(x, state);
-
-  let count = 0;
-  let longestStreak = 0;
-  let entries = await getNextBatch();
-
-  while(entries.length > 0) {
-    for(let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
-      if(entry.showed_up == "NO") {
-        if(count > longestStreak) longestStreak = count;
-        count = 0;
-      } else if(entry.showed_up == "YES") {
-        count++;
-        if(count > longestStreak) longestStreak = count;
-      }
-    }
-    entries = await getNextBatch();
-  }
-
-  return longestStreak;
+  return {
+    currentStreak: showStreaks.current,
+    currentNoShowStreak: noShowStreaks.current,
+    longestStreak: showStreaks.longest,
+    longestNoShowStreak: noShowStreaks.longest
+  };
 }
 
 module.exports = {
-  getStats
+  getStats,
+  getStreaks
 }
