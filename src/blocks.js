@@ -52,8 +52,19 @@ const showUpResponseBlock = function(x, action, stats) {
   }
 
   return [
-  	{
-  		"type": "divider"
+    {
+      "block_id": "reset",
+  		"type": "actions",
+  		"elements": [
+  			{
+  				"type": "button",
+  				"text": {
+  					"type": "plain_text",
+  					"text": "Reset answer"
+  				},
+  				"action_id": "x_reset"
+  			}
+  		]
   	},
   	{
   		"type": "section",
