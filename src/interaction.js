@@ -26,19 +26,19 @@ const interaction = async function(req, state) {
     x = question.user_name;
   }
 
-  const action = payload.actions
-    .find(action => action.block_id == "showed_up");
-
-  if(!action) {
-    console.log("Unknown interaction");
-    return "";
-  }
-
-  await recordAttendance(payload, action, x, state);
-
-  sendResponse(payload, action.action_id, x, state).then(console.log).catch(console.error);
-
-  return "ok"
+  await Promise.all(
+    payload.actions.map(async action => {
+      if(action.block_id == "showed_up") {
+        await recordAttendance(payload, action, x, state);
+        sendResponse(payload, action.action_id, x, state).then(console.log).catch(console.error);
+      } else if(action.block_id == "reset") {
+        resetQuestion(x, payload).then(console.log).catch(console.error);
+      } else {
+        console.log("Unknown interaction");
+        return "";
+      }
+    })
+  );
 }
 
 const recordAttendance = async function(payload, action, x, state) {
@@ -83,12 +83,19 @@ const sendResponse = async function(payload, actionId, x, state) {
   const Users = state.models.Users;
   const stats = await getStats(x, state);
 
-  const questionBlock = showUpQuestionBlock(x, true);
-  const responseBlock = showUpResponseBlock(x, actionId, stats);
-  const blocks = questionBlock.concat(responseBlock);
+  const blocks = showUpResponseBlock(x, actionId, stats);
 
   const message = {
     blocks
+  }
+
+  return postMessage(message, payload.response_url);
+}
+
+const resetQuestion = async function(x, payload) {
+
+  const message = {
+    blocks: showUpQuestionBlock(x)
   }
 
   return postMessage(message, payload.response_url);
