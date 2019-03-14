@@ -8,6 +8,15 @@ const runScheduler = async function(state) {
   console.log("Running scheduler");
 
   const nowLocal = new Date(timeZoneShift(Date.now(), state));
+
+  if(nowLocal.getDay() == 6) {
+    console.log("It is Saturday my dudes....");
+    return "Done";
+  } else if(nowLocal.getDay() == 0) {
+    console.log("It is Sunday my dudes....");
+    return "Done";
+  }
+
   const startOfDayLocal = new Date(`${nowLocal.getFullYear()}-${nowLocal.getMonth() + 1}-${nowLocal.getDate()}`);
   const nextDayLocal = new Date(startOfDayLocal.getTime() + 24*60*60*1000)
   const startOfDayUTC = timeZoneShift(startOfDayLocal.getTime(), state, true);
