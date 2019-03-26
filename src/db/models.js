@@ -18,11 +18,13 @@ const AttendanceModel = (sequelize) => {
   return sequelize.define('attendances', {
     date: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      primaryKey: true
     },
     user_name: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      primaryKey: true
     },
     showed_up: {
       type: Sequelize.STRING,
