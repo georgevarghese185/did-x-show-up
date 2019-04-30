@@ -29,8 +29,8 @@ const interaction = async function(req, state) {
   await Promise.all(
     payload.actions.map(async action => {
       if(action.block_id == "showed_up") {
-        await recordAttendance(payload, action, x, state);
-        sendResponse(payload, action.action_id, x, state).then(console.log).catch(console.error);
+        let {firstAnsweredBy} = await recordAttendance(payload, action, x, state);
+        sendResponse(payload, action.action_id, x, firstAnsweredBy, state).then(console.log).catch(console.error);
       } else if(action.block_id == "reset") {
         resetQuestion(x, payload).then(console.log).catch(console.error);
       } else {
@@ -52,8 +52,15 @@ const recordAttendance = async function(payload, action, x, state) {
   const messageDateLocal = getDateAsNumber(messageTimeLocal);
 
   let attendanceEntry = await Attendance.findOne({where: {date: messageDateLocal, user_name: x}});
+  let firstAnsweredBy;
   if(attendanceEntry) {
     const history = JSON.parse(attendanceEntry.showed_up_history);
+    const firstSubmission = history.find(h => h.showed_up == showedUp);
+    if(firstSubmission != null) {
+      firstAnsweredBy = firstSubmission.user_id;
+    } else {
+      firstAnsweredBy = payload.user.id;
+    }
     history.push({
       user_id: payload.user.id,
       action_time_utc: action.action_ts,
@@ -64,6 +71,7 @@ const recordAttendance = async function(payload, action, x, state) {
       showed_up_history: JSON.stringify(history)
     })
   } else {
+    firstAnsweredBy = payload.user.id;
     await Attendance.create({
       date: messageDateLocal,
       user_name: x,
@@ -77,13 +85,15 @@ const recordAttendance = async function(payload, action, x, state) {
       ])
     })
   }
+
+  return {firstAnsweredBy}
 }
 
-const sendResponse = async function(payload, actionId, x, state) {
+const sendResponse = async function(payload, actionId, x, firstAnsweredBy, state) {
   const Users = state.models.Users;
   const stats = await getStats(x, state);
 
-  const blocks = showUpResponseBlock(x, actionId, stats);
+  const blocks = showUpResponseBlock(x, actionId, firstAnsweredBy, stats);
 
   const message = {
     blocks

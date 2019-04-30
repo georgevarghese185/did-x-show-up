@@ -40,7 +40,7 @@ const showUpQuestionBlock = function(x) {
   ]
 }
 
-const showUpResponseBlock = function(x, action, stats) {
+const showUpResponseBlock = function(x, action, firstAnsweredBy, stats) {
   let text;
 
   if(action == "x_show") {
@@ -73,6 +73,13 @@ const showUpResponseBlock = function(x, action, stats) {
   			"text": text
   		}
   	},
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": `_(Fastest answer by <@${firstAnsweredBy}>)_`
+      }
+    },
     {
   		"type": "section",
   		"text": {
